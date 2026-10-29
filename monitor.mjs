@@ -34,7 +34,7 @@ if(env.SIMULATE_HEALTH_FAILURE==='true')healthy=false;
 await notify('Open Dibs scheduler needs attention',!healthy,'The independent monitor could not confirm scheduler health. Open the private application and the recovery runbook. No household details are collected here.');
 if (relay) {
  const post=async body=>{const response=await fetchImpl(`${origin}/notifier`,{method:'POST',headers:{Authorization:`Bearer ${relay}`,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(15_000)});if(!response.ok)throw new Error('Notification relay unavailable');return response.json();};
- const pending=await post({action:'claim'});
+ const pending=await post({action:'claim',source:env.GITHUB_EVENT_NAME==='schedule'?'schedule':'manual'});
  const tests=pending.batch.filter(x=>x.test), notices=pending.batch.filter(x=>!x.test);
  const events=items=>items.map(x=>x.eventId).filter(id=>typeof id==='string'&&/^[a-f0-9-]{36}$/.test(id));
  if(tests.length)await notify('Open Dibs notification test',true,'This is the requested notification-channel test. Receiving this GitHub notification confirms only the observed channel; email arrival is checked separately.',events(tests));
