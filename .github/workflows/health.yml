@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '19 * * * *'
   workflow_dispatch:
+    inputs:
+      simulate_health_failure:
+        type: boolean
+        default: false
+        description: Controlled monitor fault injection
 permissions:
   contents: read
   issues: write
@@ -20,5 +25,6 @@ jobs:
           node-version: '26.13.0'
       - run: node monitor.mjs
         env:
+          SIMULATE_HEALTH_FAILURE: ${{ inputs.simulate_health_failure }}
           GITHUB_TOKEN: ${{ github.token }}
           NOTIFIER_TOKEN: ${{ secrets.NOTIFIER_TOKEN }}

@@ -18,6 +18,7 @@ async function notify(title, open, body) {
 }
 let healthy=false;
 try { const response=await fetch(`${origin}/care-healthz`,{signal:AbortSignal.timeout(10_000)}); healthy=response.ok&&(await response.json()).status==='ok'; } catch { /* Independent Cloudflare-outage detection. */ }
+if(process.env.SIMULATE_HEALTH_FAILURE==='true')healthy=false;
 await notify('Open Dibs scheduler needs attention',!healthy,'The independent monitor could not confirm scheduler health. Open the private application and the recovery runbook. No household details are collected here.');
 if (relay) {
  const post=async body=>{const response=await fetch(`${origin}/notifier`,{method:'POST',headers:{Authorization:`Bearer ${relay}`,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(15_000)});if(!response.ok)throw new Error('Notification relay unavailable');return response.json();};
