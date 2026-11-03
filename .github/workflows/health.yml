@@ -1,7 +1,9 @@
 name: Open Dibs independent health
 on:
   schedule:
-    - cron: '19 * * * *'
+    # Bounded recovery probes away from the hour boundary. GitHub can delay or
+    # drop these too; observed schedule events, not this declaration, are proof.
+    - cron: '9,29,49 * * * *'
   workflow_dispatch:
     inputs:
       simulate_health_failure:
